@@ -6,7 +6,7 @@ from pandasai import SmartDataframe
 import openai
 
 # Get API key
-OPENAI_API_KEY = "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"
+OPENAI_API_KEY = "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"
 
 # Set OpenAI API key
 openai.api_key = OPENAI_API_KEY
@@ -61,4 +61,4 @@ hide_st_style = """
 """
 
 # Apply CSS code to hide header, footer, and menu
-st.markdown(hide_st_style, unsafe_allow_html=True)
+# st.markdown(hide_st_style, unsafe_allow_html=True)
