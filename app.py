@@ -5,12 +5,6 @@ from pandasai.llm.openai import OpenAI
 from pandasai import SmartDataframe
 import openai
 
-# Get API key
-OPENAI_API_KEY = "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"
-
-# Set OpenAI API key
-openai.api_key = OPENAI_API_KEY
-
 # Set page configuration and title for Streamlit
 st.set_page_config(page_title="Chat with CSV", page_icon="📄", layout="wide")
 
@@ -24,41 +18,39 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-def chat_with_csv(df, prompt):
-    llm = OpenAI(api_token=OPENAI_API_KEY,max_tokens=1000,model="gpt-4-1106-preview")
-    df = SmartDataframe(df, config={"llm": llm})
-    answer = df.chat(prompt)
-    print(answer)
-    return answer
+# Add an input field for the API key
+OPENAI_API_KEY = st.text_input("Enter your OpenAI API Key")
 
-input_csv = st.file_uploader("Upload your CSV file", type=['csv'])
+# Check if API key is provided
+if OPENAI_API_KEY:
+    # Set OpenAI API key
+    openai.api_key = OPENAI_API_KEY
 
-if input_csv is not None:
-    col1, col2 = st.columns([1, 1])
+    def chat_with_csv(df, prompt):
+        llm = OpenAI(api_token=OPENAI_API_KEY, max_tokens=1000, model="gpt-4-1106-preview")
+        df = SmartDataframe(df, config={"llm": llm})
+        answer = df.chat(prompt)
+        print(answer)
+        return answer
 
-    with col1:
-        st.info("CSV Uploaded Successfully")
-        data = pd.read_csv(input_csv)
-        st.dataframe(data, use_container_width=True)
+    input_csv = st.file_uploader("Upload your CSV file", type=['csv'])
 
-    with col2:
-        st.info("Chat Below")
-        input_text = st.text_area("Enter your query")
+    if input_csv is not None:
+        col1, col2 = st.columns([1, 1])
 
-        if input_text is not None:
-            if st.button("Chat with CSV"):
-                st.info("Your Query: " + input_text)
-                result = chat_with_csv(data, input_text)
-                st.success(result)
+        with col1:
+            st.info("CSV Uploaded Successfully")
+            data = pd.read_csv(input_csv)
+            st.dataframe(data, use_container_width=True)
 
-# Hide Streamlit header, footer, and menu
-hide_st_style = """
-    <style>
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
-    </style>
-"""
+        with col2:
+            st.info("Chat Below")
+            input_text = st.text_area("Enter your query")
 
-# Apply CSS code to hide header, footer, and menu
-# st.markdown(hide_st_style, unsafe_allow_html=True)
+            if input_text is not None:
+                if st.button("Chat with CSV"):
+                    st.info("Your Query: " + input_text)
+                    result = chat_with_csv(data, input_text)
+                    st.success(result)
+else:
+    st.warning("Please enter your OpenAI API Key in the input field above.")
